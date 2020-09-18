@@ -1,0 +1,10 @@
+*.pyc
+*.DS_Store
+*~
+data/
+*.tar.gz
+*.egg-info
+.idea
+/ModelMemory/ReadyModel/SimFAQ/*
+/ModelMemory/model/*
+/Domain/CharactersEmbedding.json

@@ -1,0 +1,248 @@
+/home/data1/software/Anaconda3/envs/HQpy36/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:523: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/home/data1/software/Anaconda3/envs/HQpy36/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:524: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/home/data1/software/Anaconda3/envs/HQpy36/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:525: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/home/data1/software/Anaconda3/envs/HQpy36/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/home/data1/software/Anaconda3/envs/HQpy36/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/home/data1/software/Anaconda3/envs/HQpy36/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:532: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+WARNING:tensorflow:From /home/data1/software/Anaconda3/envs/HQpy36/lib/python3.6/site-packages/tensorflow/python/framework/function.py:987: calling Graph.create_op (from tensorflow.python.framework.ops) with compute_shapes is deprecated and will be removed in a future version.
+Instructions for updating:
+Shapes are always computed; don't use the compute_shapes as it has no effect.
+2020-09-17 10:09:30.928822: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 AVX512F FMA
+2020-09-17 10:09:31.306846: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 0 with properties: 
+name: GeForce RTX 2080 Ti major: 7 minor: 5 memoryClockRate(GHz): 1.545
+pciBusID: 0000:1b:00.0
+totalMemory: 10.73GiB freeMemory: 10.16GiB
+2020-09-17 10:09:31.557166: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 1 with properties: 
+name: GeForce RTX 2080 Ti major: 7 minor: 5 memoryClockRate(GHz): 1.545
+pciBusID: 0000:1e:00.0
+totalMemory: 10.73GiB freeMemory: 10.16GiB
+2020-09-17 10:09:31.809124: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 2 with properties: 
+name: GeForce RTX 2080 Ti major: 7 minor: 5 memoryClockRate(GHz): 1.545
+pciBusID: 0000:3f:00.0
+totalMemory: 10.73GiB freeMemory: 10.16GiB
+2020-09-17 10:09:32.073344: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 3 with properties: 
+name: GeForce RTX 2080 Ti major: 7 minor: 5 memoryClockRate(GHz): 1.545
+pciBusID: 0000:40:00.0
+totalMemory: 10.73GiB freeMemory: 10.16GiB
+2020-09-17 10:09:32.074000: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0, 1, 2, 3
+2020-09-17 10:09:33.769258: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-09-17 10:09:33.769312: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 1 2 3 
+2020-09-17 10:09:33.769321: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N N N N 
+2020-09-17 10:09:33.769333: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 1:   N N N N 
+2020-09-17 10:09:33.769349: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 2:   N N N N 
+2020-09-17 10:09:33.769355: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 3:   N N N N 
+2020-09-17 10:09:33.769996: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 9805 MB memory) -> physical GPU (device: 0, name: GeForce RTX 2080 Ti, pci bus id: 0000:1b:00.0, compute capability: 7.5)
+2020-09-17 10:09:33.770432: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:1 with 9805 MB memory) -> physical GPU (device: 1, name: GeForce RTX 2080 Ti, pci bus id: 0000:1e:00.0, compute capability: 7.5)
+2020-09-17 10:09:33.771137: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:2 with 9805 MB memory) -> physical GPU (device: 2, name: GeForce RTX 2080 Ti, pci bus id: 0000:3f:00.0, compute capability: 7.5)
+2020-09-17 10:09:33.771785: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:3 with 9805 MB memory) -> physical GPU (device: 3, name: GeForce RTX 2080 Ti, pci bus id: 0000:40:00.0, compute capability: 7.5)
+Initializing------
+the max length of q set is 91
+the max length of t set is 87
+training------
+[epoch:0] loss 3.918309 accuracy 0.205100
+[epoch:1] loss 3.555503 accuracy 0.177450
+[epoch:2] loss 3.268779 accuracy 0.178000
+[epoch:3] loss 2.869662 accuracy 0.247950
+[epoch:4] loss 2.397293 accuracy 0.369100
+[epoch:5] loss 1.889886 accuracy 0.492900
+[epoch:6] loss 1.529427 accuracy 0.580550
+[epoch:7] loss 1.250590 accuracy 0.646550
+[epoch:8] loss 1.102612 accuracy 0.690200
+[epoch:9] loss 0.999644 accuracy 0.717750
+[epoch:10] loss 0.880543 accuracy 0.746900
+[epoch:11] loss 0.801591 accuracy 0.771500
+[epoch:12] loss 0.742228 accuracy 0.786100
+[epoch:13] loss 0.713836 accuracy 0.795000
+[epoch:14] loss 0.653446 accuracy 0.809650
+[epoch:15] loss 0.632038 accuracy 0.818600
+[epoch:16] loss 0.582341 accuracy 0.834200
+[epoch:17] loss 0.545619 accuracy 0.843150
+[epoch:18] loss 0.523278 accuracy 0.851400
+[epoch:19] loss 0.506043 accuracy 0.856850
+[epoch:20] loss 0.460250 accuracy 0.870800
+[epoch:21] loss 0.453602 accuracy 0.872050
+[epoch:22] loss 0.417412 accuracy 0.880450
+[epoch:23] loss 0.410127 accuracy 0.882850
+[epoch:24] loss 0.391805 accuracy 0.888450
+[epoch:25] loss 0.385607 accuracy 0.888900
+[epoch:26] loss 0.372044 accuracy 0.894850
+[epoch:27] loss 0.350615 accuracy 0.901350
+[epoch:28] loss 0.330801 accuracy 0.908750
+[epoch:29] loss 0.323204 accuracy 0.909900
+[epoch:30] loss 0.309822 accuracy 0.913600
+[epoch:31] loss 0.302546 accuracy 0.916700
+[epoch:32] loss 0.288488 accuracy 0.920200
+[epoch:33] loss 0.281094 accuracy 0.921400
+[epoch:34] loss 0.271658 accuracy 0.924200
+[epoch:35] loss 0.251282 accuracy 0.929350
+[epoch:36] loss 0.235147 accuracy 0.934150
+[epoch:37] loss 0.242165 accuracy 0.931200
+[epoch:38] loss 0.234784 accuracy 0.936200
+[epoch:39] loss 0.229266 accuracy 0.937950
+[epoch:40] loss 0.220802 accuracy 0.937750
+[epoch:41] loss 0.211804 accuracy 0.943050
+[epoch:42] loss 0.198936 accuracy 0.947400
+[epoch:43] loss 0.193993 accuracy 0.949100
+[epoch:44] loss 0.187527 accuracy 0.950000
+[epoch:45] loss 0.184341 accuracy 0.950950
+[epoch:46] loss 0.179848 accuracy 0.951750
+[epoch:47] loss 0.176322 accuracy 0.953250
+[epoch:48] loss 0.167724 accuracy 0.957100
+[epoch:49] loss 0.166225 accuracy 0.955450
+[epoch:50] loss 0.165774 accuracy 0.957050
+[epoch:51] loss 0.158069 accuracy 0.960050
+[epoch:52] loss 0.149325 accuracy 0.961700
+[epoch:53] loss 0.149984 accuracy 0.960450
+[epoch:54] loss 0.143486 accuracy 0.964700
+[epoch:55] loss 0.140409 accuracy 0.964600
+[epoch:56] loss 0.136897 accuracy 0.964300
+[epoch:57] loss 0.125523 accuracy 0.968050
+[epoch:58] loss 0.126686 accuracy 0.969300
+[epoch:59] loss 0.121368 accuracy 0.971700
+[epoch:60] loss 0.127658 accuracy 0.969850
+[epoch:61] loss 0.119238 accuracy 0.971000
+[epoch:62] loss 0.117011 accuracy 0.970800
+[epoch:63] loss 0.109060 accuracy 0.974150
+[epoch:64] loss 0.111137 accuracy 0.972900
+[epoch:65] loss 0.111480 accuracy 0.970800
+[epoch:66] loss 0.105940 accuracy 0.975550
+[epoch:67] loss 0.101931 accuracy 0.976800
+[epoch:68] loss 0.101278 accuracy 0.976500
+[epoch:69] loss 0.098103 accuracy 0.978250
+[epoch:70] loss 0.097361 accuracy 0.977400
+[epoch:71] loss 0.091277 accuracy 0.979700
+[epoch:72] loss 0.091856 accuracy 0.978850
+[epoch:73] loss 0.091050 accuracy 0.979250
+[epoch:74] loss 0.085969 accuracy 0.982450
+[epoch:75] loss 0.083253 accuracy 0.981550
+[epoch:76] loss 0.082617 accuracy 0.980050
+[epoch:77] loss 0.081840 accuracy 0.981100
+[epoch:78] loss 0.078326 accuracy 0.983050
+[epoch:79] loss 0.080758 accuracy 0.982450
+[epoch:80] loss 0.078992 accuracy 0.981550
+[epoch:81] loss 0.072708 accuracy 0.984200
+[epoch:82] loss 0.071450 accuracy 0.984700
+[epoch:83] loss 0.068967 accuracy 0.985750
+[epoch:84] loss 0.068825 accuracy 0.986400
+[epoch:85] loss 0.069403 accuracy 0.984500
+[epoch:86] loss 0.068746 accuracy 0.985650
+[epoch:87] loss 0.069660 accuracy 0.983550
+[epoch:88] loss 0.068027 accuracy 0.984150
+[epoch:89] loss 0.063722 accuracy 0.987250
+[epoch:90] loss 0.061034 accuracy 0.986900
+[epoch:91] loss 0.064633 accuracy 0.984950
+[epoch:92] loss 0.059219 accuracy 0.988150
+[epoch:93] loss 0.061121 accuracy 0.987450
+[epoch:94] loss 0.057787 accuracy 0.989150
+[epoch:95] loss 0.057312 accuracy 0.988550
+[epoch:96] loss 0.059403 accuracy 0.987200
+[epoch:97] loss 0.054963 accuracy 0.989100
+[epoch:98] loss 0.053748 accuracy 0.989800
+[epoch:99] loss 0.054683 accuracy 0.989500
+[epoch:100] loss 0.054283 accuracy 0.989450
+[epoch:101] loss 0.052283 accuracy 0.989800
+[epoch:102] loss 0.051271 accuracy 0.990200
+[epoch:103] loss 0.052026 accuracy 0.990250
+[epoch:104] loss 0.047376 accuracy 0.990900
+[epoch:105] loss 0.046930 accuracy 0.991450
+[epoch:106] loss 0.045644 accuracy 0.991800
+[epoch:107] loss 0.048189 accuracy 0.990750
+[epoch:108] loss 0.045565 accuracy 0.991300
+[epoch:109] loss 0.046653 accuracy 0.990800
+[epoch:110] loss 0.045383 accuracy 0.991400
+[epoch:111] loss 0.044169 accuracy 0.991750
+[epoch:112] loss 0.043476 accuracy 0.992400
+[epoch:113] loss 0.042029 accuracy 0.992400
+[epoch:114] loss 0.041950 accuracy 0.992050
+[epoch:115] loss 0.041586 accuracy 0.991900
+[epoch:116] loss 0.038572 accuracy 0.993450
+[epoch:117] loss 0.039474 accuracy 0.992750
+[epoch:118] loss 0.039976 accuracy 0.992000
+[epoch:119] loss 0.041088 accuracy 0.991350
+[epoch:120] loss 0.039317 accuracy 0.992900
+[epoch:121] loss 0.041061 accuracy 0.991850
+[epoch:122] loss 0.038961 accuracy 0.993200
+[epoch:123] loss 0.039706 accuracy 0.992100
+[epoch:124] loss 0.038115 accuracy 0.992500
+[epoch:125] loss 0.036583 accuracy 0.993900
+[epoch:126] loss 0.036760 accuracy 0.992800
+[epoch:127] loss 0.037140 accuracy 0.992800
+[epoch:128] loss 0.036192 accuracy 0.993600
+[epoch:129] loss 0.036178 accuracy 0.993050
+[epoch:130] loss 0.034162 accuracy 0.994000
+[epoch:131] loss 0.033074 accuracy 0.994400
+[epoch:132] loss 0.035478 accuracy 0.993250
+[epoch:133] loss 0.034310 accuracy 0.994150
+[epoch:134] loss 0.032026 accuracy 0.995050
+[epoch:135] loss 0.035064 accuracy 0.993250
+[epoch:136] loss 0.033104 accuracy 0.994150
+[epoch:137] loss 0.034038 accuracy 0.994100
+[epoch:138] loss 0.032100 accuracy 0.994600
+[epoch:139] loss 0.031775 accuracy 0.994750
+[epoch:140] loss 0.032482 accuracy 0.994150
+[epoch:141] loss 0.033036 accuracy 0.994500
+[epoch:142] loss 0.030585 accuracy 0.994950
+[epoch:143] loss 0.031197 accuracy 0.994350
+[epoch:144] loss 0.031779 accuracy 0.993850
+[epoch:145] loss 0.032133 accuracy 0.994650
+[epoch:146] loss 0.030521 accuracy 0.994150
+[epoch:147] loss 0.030077 accuracy 0.993800
+[epoch:148] loss 0.031015 accuracy 0.994500
+[epoch:149] loss 0.028930 accuracy 0.994650
+[epoch:150] loss 0.029307 accuracy 0.994900
+[epoch:151] loss 0.030478 accuracy 0.994650
+[epoch:152] loss 0.027062 accuracy 0.995850
+[epoch:153] loss 0.028467 accuracy 0.995350
+[epoch:154] loss 0.029380 accuracy 0.995100
+[epoch:155] loss 0.027703 accuracy 0.995500
+[epoch:156] loss 0.026015 accuracy 0.996250
+[epoch:157] loss 0.028196 accuracy 0.995300
+[epoch:158] loss 0.027062 accuracy 0.995550
+[epoch:159] loss 0.026413 accuracy 0.995900
+[epoch:160] loss 0.025946 accuracy 0.995700
+[epoch:161] loss 0.025778 accuracy 0.995700
+[epoch:162] loss 0.024759 accuracy 0.995800
+[epoch:163] loss 0.024808 accuracy 0.996050
+[epoch:164] loss 0.026782 accuracy 0.994800
+[epoch:165] loss 0.024999 accuracy 0.995650
+[epoch:166] loss 0.024371 accuracy 0.996300
+[epoch:167] loss 0.024636 accuracy 0.995800
+[epoch:168] loss 0.023487 accuracy 0.996300
+[epoch:169] loss 0.024017 accuracy 0.995950
+[epoch:170] loss 0.024408 accuracy 0.995900
+[epoch:171] loss 0.023499 accuracy 0.996800
+[epoch:172] loss 0.022950 accuracy 0.996400
+[epoch:173] loss 0.023362 accuracy 0.996700
+[epoch:174] loss 0.024398 accuracy 0.995950
+[epoch:175] loss 0.023435 accuracy 0.995850
+[epoch:176] loss 0.022431 accuracy 0.996600
+[epoch:177] loss 0.023126 accuracy 0.996300
+[epoch:178] loss 0.025331 accuracy 0.995500
+[epoch:179] loss 0.024704 accuracy 0.995650
+[epoch:180] loss 0.023070 accuracy 0.996550
+[epoch:181] loss 0.023451 accuracy 0.995500
+[epoch:182] loss 0.021939 accuracy 0.996200
+[epoch:183] loss 0.020798 accuracy 0.997800
+[epoch:184] loss 0.022843 accuracy 0.996200
+[epoch:185] loss 0.022827 accuracy 0.996350
+[epoch:186] loss 0.022613 accuracy 0.996300
+[epoch:187] loss 0.021042 accuracy 0.996050
+[epoch:188] loss 0.022965 accuracy 0.996350
+[epoch:189] loss 0.022529 accuracy 0.996300
+[epoch:190] loss 0.022695 accuracy 0.996000
+[epoch:191] loss 0.021551 accuracy 0.996300
+[epoch:192] loss 0.021304 accuracy 0.996400
+[epoch:193] loss 0.020824 accuracy 0.996950
+[epoch:194] loss 0.022434 accuracy 0.996350
+[epoch:195] loss 0.021102 accuracy 0.997150
+[epoch:196] loss 0.021195 accuracy 0.996400
+[epoch:197] loss 0.020583 accuracy 0.996850
+[epoch:198] loss 0.021520 accuracy 0.996650
+[epoch:199] loss 0.020130 accuracy 0.996650
+save model------
