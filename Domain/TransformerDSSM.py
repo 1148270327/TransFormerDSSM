@@ -10,6 +10,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.rnn import GRUCell, DropoutWrapper
 
+from tensorflow.python import debug as tf_debug
+
 # 引入内部库
 from RandomSampling.Sampling import *
 
@@ -20,15 +22,15 @@ class TransformerDSSM:
 		t_set=None,  # 答案集,二维数组
 		dict_set=None,  # 字典集，[词：index]
 		vec_set=None,  # 向量集，[向量]，与dict_set顺序一致
-		batch_size=None,  # 训练批次，默认是全部数据
+		batch_size=None,  # 训练批次，默认是全部数据, 权重更新迭代的次数即一次反向传播过程
 		hidden_num=256,  # 隐藏层个数
 		attention_num=512,  # 注意力机制的数目
 		learning_rate=0.0001,  # 学习率
-		epoch_steps=200,  # 训练迭代次数
+		epoch_steps=200,  # 训练迭代次数, 所有的样本要重复跑几遍
 		gamma=20,  # 余弦相似度平滑因子
 		is_train=True,  # 是否进行训练
 		is_extract=False,  # 是否进行t特征提取
-		is_sample=False  # 是否采用随机采样方法进行训练
+		# is_sample=False  # 是否采用随机采样方法进行训练
 	):
 		# 外部参数
 		self.q_set = q_set
@@ -45,7 +47,6 @@ class TransformerDSSM:
 		self.gamma = gamma
 		self.is_train = is_train
 		self.is_extract = is_extract
-		self.is_sample = is_sample
 		self.keep_prob = 0.85
 		self.params = {'num_layers': 3, 'num_heads': 8, 'keep_prob': self.keep_prob, 'hidden_size': hidden_num * 2}
 
@@ -56,7 +57,7 @@ class TransformerDSSM:
 		self.t_actual_length = []
 		self.q_max_length = 0
 		self.t_max_length = 0
-		self.model_save_name = './ModelMemory/ReadyModel/SimFAQ/modelSim/transformerDSSM'
+		self.model_save_name = './ModelMemory/model/transformerDSSM'
 		self.model_save_checkpoint = './ModelMemory/model/checkpoint'
 
 		# 模型参数
@@ -89,20 +90,20 @@ class TransformerDSSM:
 				self.batch_size = self.q_size
 
 			if self.is_train:
-				self.negative_sample_num = self.batch_size // 10
+				self.negative_sample_num = self.batch_size // 10    # 按一次训练所选取的样本数batchSize 内, 按10:1 生成负样本。
 
 		if not self.is_extract:
 			# 获取q_set实际长度及最大长度
 			self.q_actual_length = []
 			for data in self.q_set:
 				self.q_actual_length.append(len(data))
-			self.q_max_length = max(self.q_actual_length)
+			self.q_max_length = max(self.q_actual_length)  # 最长的那个句子长度
 			print('the max length of q set is %d' % self.q_max_length)
 
 			# q_set数据补全
 			for i in range(len(self.q_set)):
 				if len(self.q_set[i]) < self.q_max_length:
-					self.q_set[i] = self.q_set[i] + ['UNK' for _ in range(self.q_max_length - len(self.q_set[i]))]
+					self.q_set[i] = self.q_set[i] + ['UNK' for _ in range(self.q_max_length - len(self.q_set[i]))]  # 长度补齐，UNK
 
 		if self.is_train:
 			# 获取t_set实际长度及最大长度
@@ -121,8 +122,8 @@ class TransformerDSSM:
 	def generate_data_set (self):
 		if not self.is_extract:
 			# 将q_set每一个字转换为其在字典中的序号
-			for i in range(len(self.q_set)):
-				for j in range(len(self.q_set[i])):
+			for i in range(len(self.q_set)): # 第i 句
+				for j in range(len(self.q_set[i])): # 句子中第j 字
 					if self.q_set[i][j] in self.dict_set:
 						self.q_set[i][j] = self.dict_set[self.q_set[i][j]]
 					else:
@@ -179,16 +180,17 @@ class TransformerDSSM:
 
 		return global_attention_output
 
-	def matching_layer_training (self, q_final_state, t_final_state):
+	def matching_layer_training(self, q_final_state, t_final_state):
 		with tf.name_scope('TrainProgress'):
 			# 负采样
-			t_temp_state = tf.tile(t_final_state, [1, 1])
+			t_temp_state = tf.tile(t_final_state, [1, 1]) # 行列各复制扩张一份
 			for i in range(self.negative_sample_num):
 				rand = int((random.random() + i) * self.batch_size / self.negative_sample_num)
+				# 按行拼接：t_final_state + 对t_temp_state 切片：
 				t_final_state = tf.concat((t_final_state, tf.slice(t_temp_state, [rand, 0], [self.batch_size - rand, -1]), tf.slice(t_temp_state, [0, 0], [rand, -1])), 0)
 
 			# ||q|| * ||t||
-			q_norm = tf.tile(tf.sqrt(tf.reduce_sum(tf.square(q_final_state), 1, True)), [self.negative_sample_num + 1, 1])
+			q_norm = tf.tile(tf.sqrt(tf.reduce_sum(tf.square(q_final_state), 1, True)), [self.negative_sample_num + 1, 1])  # tile（a, 1）,按列复制扩张一份后，在按行复制扩张a行
 			t_norm = tf.sqrt(tf.reduce_sum(tf.square(t_final_state), 1, True))
 			norm_prod = tf.multiply(q_norm, t_norm)
 
@@ -237,10 +239,10 @@ class TransformerDSSM:
 				embeddings = tf.constant(self.vec_set)
 
 				# 将句子中的每个字转换为字向量
-				if not self.is_extract: # 不进行 T 特征提取
-					q_embeddings = tf.nn.embedding_lookup(embeddings, self.q_inputs)
+				if not self.is_extract: # 不进行 T 特征提取, 答案特征
+					q_embeddings = tf.nn.embedding_lookup(embeddings, self.q_inputs)  # q_inputs == q_set，其中q_set每行为一个句子向量，行向量中每个元素为每个字在字典中的序号。
 				if self.is_train:
-					t_embeddings = tf.nn.embedding_lookup(embeddings, self.t_inputs)
+					t_embeddings = tf.nn.embedding_lookup(embeddings, self.t_inputs) # t_enbaddings 应该是三维，第三维是每个字的向量
 
 			with tf.name_scope('PresentationLayer'):
 				if not self.is_extract:
@@ -358,10 +360,21 @@ class TransformerDSSM:
 				# 设置模型存储所需参数
 				self.saver = tf.train.Saver()
 
-	def train (self, gpu_num=1):
+	def train(self):
+		# # 创建一个summary来监测成本
+		# tf.summary.scalar("loss", self.loss)
+		# # 创建一个summary来监测精确度
+		# tf.summary.scalar("accuracy", self.accuracy)
+		# # 将所有summary合并为一个操作op
+		# merged_summary_op = tf.summary.merge_all()
+		# # 设置summary_writer作为记录
+		# summary_writer = tf.summary.FileWriter("./logs/", tf.get_default_graph())
+
 		config = tf.ConfigProto(allow_soft_placement=True)
 		config.gpu_options.allow_growth = True
 		with tf.Session(graph=self.graph, config=config) as self.session:
+			# self.session = tf_debug.TensorBoardDebugWrapperSession(sess=self.session, grpc_debug_server_addresses=['0.0.0.0:6002'], send_traceback_and_source_code=False)
+			self.session = tf_debug.LocalCLIDebugWrapperSession(self.session) # tfdbg 命令行模式
 			# 判断模型是否存在
 			if os.path.isdir(self.model_save_checkpoint):
 				# 恢复变量
@@ -372,40 +385,24 @@ class TransformerDSSM:
 
 			# 开始迭代，使用Adam优化的随机梯度下降法，并将结果输出到日志文件
 			print('training------')
-			index_list = [i for i in range(self.q_size)]
-			sample_nums = self.batch_size * gpu_num
 			for i in range(self.epoch_steps):
 				total_loss = 0
 				total_accuracy = 0
-				for j in range(self.q_size // sample_nums):
-					if self.is_sample:
-						sample_list = simple_sampling(index_list, sample_nums)
-						q_set = []
-						t_set = []
-						q_actual_length = []
-						t_actual_length = []
-						for index in sample_list:
-							q_set.append(self.q_set[index])
-							t_set.append(self.t_set[index])
-							q_actual_length.append(self.q_actual_length[index])
-							t_actual_length.append(self.t_actual_length[index])
-					else:
-						q_set = self.q_set[j * sample_nums:(j + 1) * sample_nums]
-						t_set = self.t_set[j * sample_nums:(j + 1) * sample_nums]
-						q_actual_length = self.q_actual_length[j * sample_nums:(j + 1) * sample_nums]
-						t_actual_length = self.t_actual_length[j * sample_nums:(j + 1) * sample_nums]
-					feed_dict = {self.q_inputs: q_set, self.q_inputs_actual_length: q_actual_length,
-								self.t_inputs: t_set, self.t_inputs_actual_length: t_actual_length}
+				for j in range(self.q_size // self.batch_size):  # 默认情况：batch_size == q_size
+					q_set = self.q_set[j * self.batch_size:(j + 1) * self.batch_size]
+					t_set = self.t_set[j * self.batch_size:(j + 1) * self.batch_size]
+					q_actual_length = self.q_actual_length[j * self.batch_size:(j + 1) * self.batch_size]
+					t_actual_length = self.t_actual_length[j * self.batch_size:(j + 1) * self.batch_size]
+					# 投喂数据
+					feed_dict = {self.q_inputs: q_set, self.q_inputs_actual_length: q_actual_length, self.t_inputs: t_set, self.t_inputs_actual_length: t_actual_length}
 					_, loss, accuracy = self.session.run([self.train_op, self.loss, self.accuracy], feed_dict=feed_dict)
 					total_loss += loss
 					total_accuracy += accuracy
-				print('[epoch:%d] loss %f accuracy %f' % (
-				i, total_loss / (self.q_size // sample_nums), total_accuracy / (self.q_size // sample_nums)))
-
+				print('[epoch:%d] loss %f accuracy %f' % (i, total_loss / (self.q_size // self.batch_size), total_accuracy / (self.q_size // self.batch_size)))
 			# 保存模型
 			print('save model------')
 			self.saver.save(self.session, self.model_save_name)
-
+		# summary_writer.close()
 		pass
 
 	def start_session (self):
@@ -433,8 +430,7 @@ class TransformerEncoder(tf.layers.Layer):
 		super(TransformerEncoder, self).__init__()
 		self.layers = []
 		for _ in range(params["num_layers"]):
-			self_attention_layer = SelfAttention(params["hidden_size"], params["num_heads"],
-				params["keep_prob"])
+			self_attention_layer = SelfAttention(params["hidden_size"], params["num_heads"], params["keep_prob"])
 			feed_forward_network = FeedFowardNetwork(params["hidden_size"], params["keep_prob"])
 
 			self.layers.append([LayNormAdd(self_attention_layer, params), LayNormAdd(feed_forward_network, params)])

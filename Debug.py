@@ -40,9 +40,9 @@ def dssm_model_train (faq_dict, embedding_dict):
 	dssm = TransformerDSSM(q_set=query_set, t_set=answer_set, dict_set=word_dict, vec_set=vec_set, batch_size=250, is_sample=True)
 	dssm.init_model_parameters()
 	dssm.generate_data_set()
-	dssm.build_graph_by_gpu(4)
-	# dssm.build_graph_by_cpu()
-	dssm.train(4)
+	# dssm.build_graph_by_gpu(4)
+	dssm.build_graph_by_cpu()
+	dssm.train()
 
 
 def dssm_model_infer (queries, answer_embedding, embedding_dict, top_k=1, threshold=0.):
