@@ -169,7 +169,7 @@ class TransformerDSSM:
                 b_omega = tf.get_variable(name='b_omega', shape=[self.attention_num], initializer=tf.random_normal_initializer())
                 u_omega = tf.get_variable(name='u_omega', shape=[self.attention_num], initializer=tf.random_normal_initializer())
 
-                v = tf.tanh(tf.tensordot(transformer_output, w_omega, axes=1) + b_omega)
+                v = tf.tanh(tf.tensordot(transformer_output, w_omega, axes=1) + b_omega) # 激活函数tanh
 
                 vu = tf.tensordot(v, u_omega, axes=1, name='vu')  # (B,T) shape
                 alphas = tf.nn.softmax(vu, name='alphas')  # (B,T) shape
@@ -181,34 +181,37 @@ class TransformerDSSM:
 
     def matching_layer_training(self, q_final_state, t_final_state):
         with tf.name_scope('TrainProgress'):
-            # 负采样
+            # 负采样, DSSM 论文中特意提到采用不同的采样比例对结果影响不大
+            # 问题i除了与答案i相匹配以外，其余答案均为问题i的负样本，因此需要对每一个问题进行负采样
             t_temp_state = tf.tile(t_final_state, [1, 1])  # 行列各复制扩张一份
             for i in range(self.negative_sample_num):
                 rand = int((random.random() + i) * self.batch_size / self.negative_sample_num)
                 # 按行拼接：t_final_state + 对t_temp_state 切片：
                 t_final_state = tf.concat((t_final_state, tf.slice(t_temp_state, [rand, 0], [self.batch_size - rand, -1]), tf.slice(t_temp_state, [0, 0], [rand, -1])), 0)
-
+            # Cosine similarity
             # ||q|| * ||t||
+            # query_norm = sqrt(sum(each x^2))
             q_norm = tf.tile(tf.sqrt(tf.reduce_sum(tf.square(q_final_state), 1, True)), [self.negative_sample_num + 1, 1])  # tile（a, 1）,按列复制扩张一份后，在按行复制扩张a行
+            # doc_norm = sqrt(sum(each x^2))
             t_norm = tf.sqrt(tf.reduce_sum(tf.square(t_final_state), 1, True))
-            norm_prod = tf.multiply(q_norm, t_norm)
+            norm_prod = tf.multiply(q_norm, t_norm) # 矩阵元素相乘
 
             # q * tT
             prod = tf.reduce_sum(tf.multiply(tf.tile(q_final_state, [self.negative_sample_num + 1, 1]), t_final_state), 1, True)
 
             # cosine
+            # cos_sim_raw = query * doc / (||query|| * ||doc||)
             cos_sim_raw = tf.truediv(prod, norm_prod)
-            cos_sim = tf.transpose(
-                tf.reshape(tf.transpose(cos_sim_raw), [self.negative_sample_num + 1, self.batch_size])) * self.gamma
+            cos_sim = tf.transpose(tf.reshape(tf.transpose(cos_sim_raw), [self.negative_sample_num + 1, self.batch_size])) * self.gamma
 
         return cos_sim
 
-    def matching_layer_infer(self, q_final_state, t_final_state):
+    def matching_layer_infer (self, q_final_state, t_final_state):
         with tf.name_scope('InferProgress'):
             # ||q|| * ||t||
             q_sqrt = tf.sqrt(tf.reduce_sum(tf.square(q_final_state), 1, True))
             t_sqrt = tf.sqrt(tf.reduce_sum(tf.square(t_final_state), 1, True))
-            norm_prod = tf.matmul(q_sqrt, t_sqrt, transpose_b=True)
+            norm_prod = tf.matmul(q_sqrt, t_sqrt, transpose_b=True) # 矩阵乘法
 
             # q * tT
             prod = tf.matmul(q_final_state, t_final_state, transpose_b=True)
@@ -265,11 +268,11 @@ class TransformerDSSM:
                     self.outputs_prob, self.outputs_index = tf.nn.top_k(cos_sim, self.top_k_answer)
                 else:
                     # softmax归一化并输出
-                    prob = tf.nn.softmax(cos_sim)
+                    prob = tf.nn.softmax(cos_sim) # 最后一个维度上执行 softmax
                     with tf.name_scope('Loss'):
                         # 取正样本
-                        hit_prob = tf.slice(prob, [0, 0], [-1, 1])
-                        self.loss = -tf.reduce_sum(tf.log(hit_prob)) / self.batch_size
+                        hit_prob = tf.slice(prob, [0, 0], [-1, 1]) # 只取一列，即正样本的概率
+                        self.loss = -tf.reduce_sum(tf.log(hit_prob)) / self.batch_size  # 交叉熵损失，求唯一数值
 
                     with tf.name_scope('Accuracy'):
                         output_train = tf.argmax(prob, axis=1)
@@ -360,34 +363,29 @@ class TransformerDSSM:
                 self.saver = tf.train.Saver()
 
     def train(self):
-        # # 创建一个summary来监测成本
-        # tf.summary.scalar("loss", self.loss)
-        # # 创建一个summary来监测精确度
-        # tf.summary.scalar("accuracy", self.accuracy)
-        # # 将所有summary合并为一个操作op
-        # merged_summary_op = tf.summary.merge_all()
-        # # 设置summary_writer作为记录
-        # summary_writer = tf.summary.FileWriter("./logs/", tf.get_default_graph())
 
         config = tf.ConfigProto(allow_soft_placement=True)
         config.gpu_options.allow_growth = True
         with tf.Session(graph=self.graph, config=config) as self.session:
-            # self.session = tf_debug.TensorBoardDebugWrapperSession(sess=self.session, grpc_debug_server_addresses=['0.0.0.0:6002'], send_traceback_and_source_code=False)
-            self.session = tf_debug.LocalCLIDebugWrapperSession(self.session)  # tfdbg 命令行模式
             # 判断模型是否存在
-            if os.path.isdir(self.model_save_checkpoint):
+            if os.path.exists(self.model_save_checkpoint):
                 # 恢复变量
+                print('加载point, 恢复变量...')
                 self.saver.restore(self.session, self.model_save_name)
             else:
                 # 初始化变量
+                print('重新制作point, 初始化变量...')
                 self.session.run(tf.global_variables_initializer())
 
             # 开始迭代，使用Adam优化的随机梯度下降法，并将结果输出到日志文件
             print('training------')
+            # self.session = tf_debug.TensorBoardDebugWrapperSession(sess=self.session, grpc_debug_server_addresses=['0.0.0.0:6002'], send_traceback_and_source_code=False)
+            # self.session = tf_debug.LocalCLIDebugWrapperSession(self.session)  # tfdbg 命令行模式
+
             for i in range(self.epoch_steps):
                 total_loss = 0
                 total_accuracy = 0
-                for j in range(self.q_size // self.batch_size):  # 默认情况：batch_size == q_size
+                for j in range(self.q_size // self.batch_size):  # 默认情况：batch_size == q_size， 小数据不需要batch_size
                     q_set = self.q_set[j * self.batch_size:(j + 1) * self.batch_size]
                     t_set = self.t_set[j * self.batch_size:(j + 1) * self.batch_size]
                     q_actual_length = self.q_actual_length[j * self.batch_size:(j + 1) * self.batch_size]
